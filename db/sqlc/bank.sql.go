@@ -15,21 +15,19 @@ INSERT INTO banks (
     swift_code,
     bank_name,
     bank_address,
-    country_iso2_code,
-    country,
+    country_code,
     bank_type
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
-) RETURNING id, swift_code, bank_name, bank_address, country_iso2_code, country, bank_type
+    $1, $2, $3, $4, $5
+) RETURNING id, swift_code, bank_name, bank_address, country_code, bank_type
 `
 
 type CreateBankParams struct {
-	SwiftCode       string         `json:"swift_code"`
-	BankName        string         `json:"bank_name"`
-	BankAddress     sql.NullString `json:"bank_address"`
-	CountryIso2Code string         `json:"country_iso2_code"`
-	Country         string         `json:"country"`
-	BankType        BankType       `json:"bank_type"`
+	SwiftCode   string         `json:"swift_code"`
+	BankName    string         `json:"bank_name"`
+	BankAddress sql.NullString `json:"bank_address"`
+	CountryCode string         `json:"country_code"`
+	BankType    BankType       `json:"bank_type"`
 }
 
 func (q *Queries) CreateBank(ctx context.Context, arg CreateBankParams) (Bank, error) {
@@ -37,8 +35,7 @@ func (q *Queries) CreateBank(ctx context.Context, arg CreateBankParams) (Bank, e
 		arg.SwiftCode,
 		arg.BankName,
 		arg.BankAddress,
-		arg.CountryIso2Code,
-		arg.Country,
+		arg.CountryCode,
 		arg.BankType,
 	)
 	var i Bank
@@ -47,8 +44,7 @@ func (q *Queries) CreateBank(ctx context.Context, arg CreateBankParams) (Bank, e
 		&i.SwiftCode,
 		&i.BankName,
 		&i.BankAddress,
-		&i.CountryIso2Code,
-		&i.Country,
+		&i.CountryCode,
 		&i.BankType,
 	)
 	return i, err
@@ -65,7 +61,7 @@ func (q *Queries) DeleteBankBySwiftCode(ctx context.Context, swiftCode string) e
 }
 
 const getBankBySwiftCode = `-- name: GetBankBySwiftCode :one
-SELECT id, swift_code, bank_name, bank_address, country_iso2_code, country, bank_type FROM banks
+SELECT id, swift_code, bank_name, bank_address, country_code, bank_type FROM banks
 WHERE swift_code = $1
 `
 
@@ -77,20 +73,19 @@ func (q *Queries) GetBankBySwiftCode(ctx context.Context, swiftCode string) (Ban
 		&i.SwiftCode,
 		&i.BankName,
 		&i.BankAddress,
-		&i.CountryIso2Code,
-		&i.Country,
+		&i.CountryCode,
 		&i.BankType,
 	)
 	return i, err
 }
 
 const getBanksByCountryISO2Code = `-- name: GetBanksByCountryISO2Code :many
-SELECT id, swift_code, bank_name, bank_address, country_iso2_code, country, bank_type FROM banks
-WHERE country_iso2_code = $1
+SELECT id, swift_code, bank_name, bank_address, country_code, bank_type FROM banks
+WHERE country_code = $1
 `
 
-func (q *Queries) GetBanksByCountryISO2Code(ctx context.Context, countryIso2Code string) ([]Bank, error) {
-	rows, err := q.db.QueryContext(ctx, getBanksByCountryISO2Code, countryIso2Code)
+func (q *Queries) GetBanksByCountryISO2Code(ctx context.Context, countryCode string) ([]Bank, error) {
+	rows, err := q.db.QueryContext(ctx, getBanksByCountryISO2Code, countryCode)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +98,7 @@ func (q *Queries) GetBanksByCountryISO2Code(ctx context.Context, countryIso2Code
 			&i.SwiftCode,
 			&i.BankName,
 			&i.BankAddress,
-			&i.CountryIso2Code,
-			&i.Country,
+			&i.CountryCode,
 			&i.BankType,
 		); err != nil {
 			return nil, err
@@ -121,7 +115,7 @@ func (q *Queries) GetBanksByCountryISO2Code(ctx context.Context, countryIso2Code
 }
 
 const getBanksBySwiftCodePrefix = `-- name: GetBanksBySwiftCodePrefix :many
-SELECT id, swift_code, bank_name, bank_address, country_iso2_code, country, bank_type FROM banks
+SELECT id, swift_code, bank_name, bank_address, country_code, bank_type FROM banks
 WHERE swift_code like $1
 `
 
@@ -139,8 +133,7 @@ func (q *Queries) GetBanksBySwiftCodePrefix(ctx context.Context, swiftCode strin
 			&i.SwiftCode,
 			&i.BankName,
 			&i.BankAddress,
-			&i.CountryIso2Code,
-			&i.Country,
+			&i.CountryCode,
 			&i.BankType,
 		); err != nil {
 			return nil, err

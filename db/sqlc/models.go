@@ -53,11 +53,15 @@ func (ns NullBankType) Value() (driver.Value, error) {
 }
 
 type Bank struct {
-	ID              int64          `json:"id"`
-	SwiftCode       string         `json:"swift_code"`
-	BankName        string         `json:"bank_name"`
-	BankAddress     sql.NullString `json:"bank_address"`
-	CountryIso2Code string         `json:"country_iso2_code"`
-	Country         string         `json:"country"`
-	BankType        BankType       `json:"bank_type"`
+	ID          int64          `json:"id"`
+	SwiftCode   string         `json:"swift_code"`
+	BankName    string         `json:"bank_name"`
+	BankAddress sql.NullString `json:"bank_address"`
+	CountryCode string         `json:"country_code"`
+	BankType    BankType       `json:"bank_type"`
+}
+
+type Country struct {
+	CountryCode string `json:"country_code"`
+	CountryName string `json:"country_name"`
 }

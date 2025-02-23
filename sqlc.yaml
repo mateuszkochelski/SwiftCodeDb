@@ -1,0 +1,19 @@
+version: 2
+sql:
+- schema: "./db/schema/up"
+  queries: "./db/query/"
+  engine: "postgresql"
+  gen:
+    go:
+      package: "db"
+      out: "./db/sqlc"
+      emit_json_tags: true
+      emit_prepared_queries: false
+      emit_interface: false
+      emit_exact_table_names: false
+      emit_pointers_for_null_types: true
+      overrides:
+      - column: "authors.id"
+        go_type: "your/package.SomeType"
+      rename:
+        foo: "bar"

@@ -3,11 +3,10 @@ INSERT INTO banks (
     swift_code,
     bank_name,
     bank_address,
-    country_iso2_code,
-    country,
+    country_code,
     bank_type
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5
 ) RETURNING *;
 
 -- name: GetBankBySwiftCode :one
@@ -20,7 +19,7 @@ WHERE swift_code like $1;
 
 -- name: GetBanksByCountryISO2Code :many
 SELECT * FROM banks
-WHERE country_iso2_code = $1;
+WHERE country_code = $1;
 
 -- name: DeleteBankBySwiftCode :exec
 DELETE FROM banks
