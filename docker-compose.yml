@@ -27,7 +27,7 @@ services:
         condition: service_healthy
     environment:
       DB_DRIVER: "postgres"
-      DB_SOURCE: "postgresql://root:password@postgres:5432/swift_codes?sslmode=disable"
+      DB_SOURCE: "postgresql://root:password@postgresDB:5432/swift_codes?sslmode=disable"
     ports:
       - "8080:8080"
     command: ["/app/cmd/backend/main"]

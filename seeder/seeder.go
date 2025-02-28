@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
 	db "github.com/mateuszkochelski/SwiftCodeDb/db/sqlc"
@@ -23,6 +22,8 @@ const (
 	swiftCodeLenght   = 11
 	countryCodeLenght = 2
 	numberOfColumns   = 8
+	dbDriver          = "postgres"
+	dbSource          = "postgresql://root:password@postgresDB:5432/swift_codes?sslmode=disable"
 )
 
 func getBankType(swiftCode string) db.BankType {
@@ -83,16 +84,8 @@ func getDataFromRecord(record []string) (db.CreateBankParams, db.CreateCountryPa
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	dbDriver := os.Getenv("DB_DRIVER")
-	dbSource := os.Getenv("DB_SOURCE")
-
 	conn, _ := sql.Open(dbDriver, dbSource)
-	err = conn.Ping()
+	err := conn.Ping()
 	if err != nil {
 		log.Fatal("Error during connection with database")
 		return
