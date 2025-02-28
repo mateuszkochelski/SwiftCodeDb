@@ -52,7 +52,7 @@ func (q *Queries) CreateBank(ctx context.Context, arg CreateBankParams) (Bank, e
 
 const deleteBankBySwiftCode = `-- name: DeleteBankBySwiftCode :exec
 DELETE FROM banks
-WHERE $1 = swift_code RETURNING id, swift_code, bank_name, bank_address, country_code, bank_type
+WHERE $1 = swift_code
 `
 
 func (q *Queries) DeleteBankBySwiftCode(ctx context.Context, swiftCode string) error {
