@@ -1,11 +1,11 @@
 migrateup:
-	@docker exec -i postgresDB psql -U root -d swift_codes < db/schema/up/001_db_up.sql > out
+	cat db/schema/up/001_db_up.sql | docker exec -i postgresDB psql -U root -d swift_codes
 	
 migratedown:
-	@docker exec -i postgresDB psql -U root -d swift_codes < db/schema/down/001_db_down.sql > out
+	cat db/schema/down/001_db_down.sql | docker exec -i postgresDB psql -U root -d swift_codes
 	
 migrateupTest:
-	@docker exec -i postgresTestDB psql -U test -d testdb < db/schema/up/001_db_up.sql > out
+	cat db/schema/up/001_db_up.sql | docker exec -i postgresTestDB psql -U test -d testdb
 
 dropdb:
 	docker exec -it postgresDB dropdb swift_codes

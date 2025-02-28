@@ -44,13 +44,13 @@ docker-compose up --build -d
 
 Migrate database for testing
 ```sh
-docker exec -i postgresTestDB psql -U test -d testdb < db/schema/up/001_db_up.sql
+cat db/schema/up/001_db_up.sql | docker exec -i postgresTestDB psql -U test -d testdb 
 ```
 
 
 Migrate database
 ```sh
-docker exec -i postgresDB psql -U root -d swift_codes < db/schema/up/001_db_up.sql
+cat db/schema/up/001_db_up.sql | docker exec -i postgresDB psql -U root -d swift_codes
 ```
 
 
