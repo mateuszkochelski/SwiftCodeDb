@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,13 +15,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Setup a test database connection
+const (
+	dbDriver = "postgres"
+	dbSource = "postgresql://test:test@postgresTestDB:5432/testdb?sslmode=disable"
+)
+
 func setupTestDB() *sql.DB {
-	db, err := sql.Open("postgres", "user=test password=test dbname=testdb sslmode=disable port=5433")
+	conn, _ := sql.Open(dbDriver, dbSource)
+	err := conn.Ping()
 	if err != nil {
-		panic("Failed to connect to test database: " + err.Error())
+		log.Fatal("cannot connect to db:", err)
 	}
-	return db
+
+	return conn
 }
 
 func Test_create_get_delete_succeed(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 
 const (
 	dbDriver         = "postgres"
-	dbSource         = "postgresql://root:password@localhost:5432/swift_codes?sslmode=disable"
+	dbSource         = "postgresql://test:test@postgresTestDB:5432/testdb?sslmode=disable"
 	validCountryCode = "PL"
 	validCountryname = "POLAND"
 )
