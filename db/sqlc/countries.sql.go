@@ -15,7 +15,8 @@ INSERT INTO countries (
     country_name
 ) VALUES (
     $1, $2
-) ON CONFLICT (country_code) DO NOTHING RETURNING country_code, country_name
+) ON CONFLICT (country_code) DO NOTHING 
+RETURNING country_code, country_name
 `
 
 type CreateCountryParams struct {

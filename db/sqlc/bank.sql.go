@@ -50,14 +50,23 @@ func (q *Queries) CreateBank(ctx context.Context, arg CreateBankParams) (Bank, e
 	return i, err
 }
 
-const deleteBankBySwiftCode = `-- name: DeleteBankBySwiftCode :exec
+const deleteBankBySwiftCode = `-- name: DeleteBankBySwiftCode :one
 DELETE FROM banks
-WHERE $1 = swift_code
+WHERE $1 = swift_code RETURNING id, swift_code, bank_name, bank_address, country_code, bank_type
 `
 
-func (q *Queries) DeleteBankBySwiftCode(ctx context.Context, swiftCode string) error {
-	_, err := q.db.ExecContext(ctx, deleteBankBySwiftCode, swiftCode)
-	return err
+func (q *Queries) DeleteBankBySwiftCode(ctx context.Context, swiftCode string) (Bank, error) {
+	row := q.db.QueryRowContext(ctx, deleteBankBySwiftCode, swiftCode)
+	var i Bank
+	err := row.Scan(
+		&i.ID,
+		&i.SwiftCode,
+		&i.BankName,
+		&i.BankAddress,
+		&i.CountryCode,
+		&i.BankType,
+	)
+	return i, err
 }
 
 const getBankBySwiftCodeWithCountry = `-- name: GetBankBySwiftCodeWithCountry :one

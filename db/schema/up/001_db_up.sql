@@ -5,7 +5,7 @@ CREATE TYPE "bank_type" AS ENUM (
 
 CREATE TABLE "countries"(
   "country_code" VARCHAR(2) PRIMARY KEY UNIQUE,
-  "country_name" VARCHAR(100) NOT NULL
+  "country_name" TEXT NOT NULL
 );
 
 CREATE TABLE "banks" (

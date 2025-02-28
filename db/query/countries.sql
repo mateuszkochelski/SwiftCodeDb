@@ -4,7 +4,8 @@ INSERT INTO countries (
     country_name
 ) VALUES (
     $1, $2
-) ON CONFLICT (country_code) DO NOTHING RETURNING *;
+) ON CONFLICT (country_code) DO NOTHING 
+RETURNING *;
 
 -- name: GetCountry :one
 SELECT * FROM countries

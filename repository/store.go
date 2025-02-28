@@ -13,7 +13,7 @@ func InsertCountryWithValidation(queries *db.Queries, newCountry db.CreateCountr
 	existingCountry, getError := queries.GetCountry(context.Background(), newCountry.CountryCode)
 	if getError == sql.ErrNoRows {
 		_, insertionError := queries.CreateCountry(context.Background(), newCountry)
-		if insertionError != nil {
+		if insertionError != nil && insertionError != sql.ErrNoRows {
 			return fmt.Errorf("insertion failed %s", insertionError.Error())
 		}
 		return nil

@@ -199,7 +199,7 @@ func (h *BankHandler) DeleteBank(w http.ResponseWriter, r *http.Request) {
 	}
 	swiftCode := strings.TrimPrefix(r.URL.Path, "/v1/swift-codes/")
 
-	err := h.queries.DeleteBankBySwiftCode(r.Context(), swiftCode)
+	_, err := h.queries.DeleteBankBySwiftCode(r.Context(), swiftCode)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			sendJSONError(w, http.StatusNotFound, "Bank not found")
@@ -225,3 +225,4 @@ func (h *BankHandler) HandleSwiftCodes(w http.ResponseWriter, r *http.Request) {
 		sendJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 }
+

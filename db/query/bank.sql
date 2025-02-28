@@ -22,9 +22,9 @@ WHERE swift_code like $1 AND swift_code != $2;
 SELECT b.swift_code, b.bank_name, b.bank_address, b.country_code, b.bank_type FROM banks as b
 WHERE b.country_code = $1;
 
--- name: DeleteBankBySwiftCode :exec
+-- name: DeleteBankBySwiftCode :one
 DELETE FROM banks
-WHERE $1 = swift_code;
+WHERE $1 = swift_code RETURNING *;
 
 
 
