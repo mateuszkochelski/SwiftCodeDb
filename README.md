@@ -4,21 +4,62 @@
 
 Swift Code API is a RESTful service for querying bank details using SWIFT codes.
 
-git clone https://github.com/mateuszkochelski/SwiftCodeDb
 
 ## Prerequisites
 - Docker
 - Makefile
 
-#How to run backend
+```sh
+git clone https://github.com/mateuszkochelski/SwiftCodeDb
+```
+# How to run backend
 ```sh
 make backendInit
 ```
-#How to run tests
+During the startup of the Docker container, the database is seeded with predefined data parsed using  seeder/seeder.go
+# How to run tests
 ```sh
 make test
 ```
 
+# How to get into docker container to run specific test
+```sh
+docker exec -i go-backend sh
+```
 Application would be running on http://localhost:8080
+
+# Instruction without makefile
+
+To be sure that containers are destroyed.
+```sh
+docker-compose down --volumes
+``` 
+
+
+Build containers
+```sh
+docker-compose up --build -d
+```
+
+
+Migrate database for testing
+```sh
+docker exec -i postgresTestDB psql -U test -d testdb < db/schema/up/001_db_up.sql
+```
+
+
+Migrate database
+```sh
+docker exec -i postgresDB psql -U root -d swift_codes < db/schema/up/001_db_up.sql
+```
+
+
+Insert data to database
+```sh
+docker exec -i go-backend sh -c "cd /app/seeder && go build -o main && ./main"
+```
+
+
+
 
 
