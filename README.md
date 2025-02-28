@@ -11,6 +11,7 @@ Swift Code API is a RESTful service for querying bank details using SWIFT codes.
 
 ```sh
 git clone https://github.com/mateuszkochelski/SwiftCodeDb
+cd SwiftCodeDb
 ```
 # How to run backend
 ```sh
