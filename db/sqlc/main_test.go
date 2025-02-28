@@ -10,14 +10,17 @@ import (
 )
 
 const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:password@localhost:8080/swift_codes?sslmode=disable"
+	dbDriver         = "postgres"
+	dbSource         = "postgresql://root:password@localhost:5432/swift_codes?sslmode=disable"
+	validCountryCode = "PL"
+	validCountryname = "POLAND"
 )
 
 var testQueries *Queries
 
 func TestMain(m *testing.M) {
 	conn, _ := sql.Open(dbDriver, dbSource)
+	defer conn.Close()
 	err := conn.Ping()
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)

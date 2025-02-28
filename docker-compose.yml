@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgresDB
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: swift_codes
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d swift_codes"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  go-backend:
+    build: .
+    container_name: go-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_DRIVER: "postgres"
+      DB_SOURCE: "postgresql://root:password@postgres:5432/swift_codes?sslmode=disable"
+    ports:
+      - "8080:8080"
+    command: ["/app/cmd/backend/main"]
+
+volumes:
+  postgres_data:

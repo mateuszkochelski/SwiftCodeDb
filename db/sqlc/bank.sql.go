@@ -52,7 +52,7 @@ func (q *Queries) CreateBank(ctx context.Context, arg CreateBankParams) (Bank, e
 
 const deleteBankBySwiftCode = `-- name: DeleteBankBySwiftCode :exec
 DELETE FROM banks
-WHERE $1 = swift_code
+WHERE $1 = swift_code RETURNING id, swift_code, bank_name, bank_address, country_code, bank_type
 `
 
 func (q *Queries) DeleteBankBySwiftCode(ctx context.Context, swiftCode string) error {
@@ -60,41 +60,63 @@ func (q *Queries) DeleteBankBySwiftCode(ctx context.Context, swiftCode string) e
 	return err
 }
 
-const getBankBySwiftCode = `-- name: GetBankBySwiftCode :one
-SELECT id, swift_code, bank_name, bank_address, country_code, bank_type FROM banks
-WHERE swift_code = $1
+const getBankBySwiftCodeWithCountry = `-- name: GetBankBySwiftCodeWithCountry :one
+SELECT b.swift_code, b.bank_name, b.bank_address, b.country_code, c.country_name, b.bank_type FROM banks as b 
+INNER JOIN countries as c ON b.country_code = c.country_code
+WHERE swift_code = $1 LIMIT 1
 `
 
-func (q *Queries) GetBankBySwiftCode(ctx context.Context, swiftCode string) (Bank, error) {
-	row := q.db.QueryRowContext(ctx, getBankBySwiftCode, swiftCode)
-	var i Bank
+type GetBankBySwiftCodeWithCountryRow struct {
+	SwiftCode   string         `json:"swift_code"`
+	BankName    string         `json:"bank_name"`
+	BankAddress sql.NullString `json:"bank_address"`
+	CountryCode string         `json:"country_code"`
+	CountryName string         `json:"country_name"`
+	BankType    BankType       `json:"bank_type"`
+}
+
+func (q *Queries) GetBankBySwiftCodeWithCountry(ctx context.Context, swiftCode string) (GetBankBySwiftCodeWithCountryRow, error) {
+	row := q.db.QueryRowContext(ctx, getBankBySwiftCodeWithCountry, swiftCode)
+	var i GetBankBySwiftCodeWithCountryRow
 	err := row.Scan(
-		&i.ID,
 		&i.SwiftCode,
 		&i.BankName,
 		&i.BankAddress,
 		&i.CountryCode,
+		&i.CountryName,
 		&i.BankType,
 	)
 	return i, err
 }
 
-const getBanksByCountryISO2Code = `-- name: GetBanksByCountryISO2Code :many
-SELECT id, swift_code, bank_name, bank_address, country_code, bank_type FROM banks
-WHERE country_code = $1
+const getBanksBranchesBySwiftCodePrefix = `-- name: GetBanksBranchesBySwiftCodePrefix :many
+SELECT b.swift_code, b.bank_name, b.bank_address, b.country_code, b.bank_type FROM banks as b 
+WHERE swift_code like $1 AND swift_code != $2
 `
 
-func (q *Queries) GetBanksByCountryISO2Code(ctx context.Context, countryCode string) ([]Bank, error) {
-	rows, err := q.db.QueryContext(ctx, getBanksByCountryISO2Code, countryCode)
+type GetBanksBranchesBySwiftCodePrefixParams struct {
+	SwiftCode   string `json:"swift_code"`
+	SwiftCode_2 string `json:"swift_code_2"`
+}
+
+type GetBanksBranchesBySwiftCodePrefixRow struct {
+	SwiftCode   string         `json:"swift_code"`
+	BankName    string         `json:"bank_name"`
+	BankAddress sql.NullString `json:"bank_address"`
+	CountryCode string         `json:"country_code"`
+	BankType    BankType       `json:"bank_type"`
+}
+
+func (q *Queries) GetBanksBranchesBySwiftCodePrefix(ctx context.Context, arg GetBanksBranchesBySwiftCodePrefixParams) ([]GetBanksBranchesBySwiftCodePrefixRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBanksBranchesBySwiftCodePrefix, arg.SwiftCode, arg.SwiftCode_2)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Bank
+	var items []GetBanksBranchesBySwiftCodePrefixRow
 	for rows.Next() {
-		var i Bank
+		var i GetBanksBranchesBySwiftCodePrefixRow
 		if err := rows.Scan(
-			&i.ID,
 			&i.SwiftCode,
 			&i.BankName,
 			&i.BankAddress,
@@ -114,22 +136,29 @@ func (q *Queries) GetBanksByCountryISO2Code(ctx context.Context, countryCode str
 	return items, nil
 }
 
-const getBanksBySwiftCodePrefix = `-- name: GetBanksBySwiftCodePrefix :many
-SELECT id, swift_code, bank_name, bank_address, country_code, bank_type FROM banks
-WHERE swift_code like $1
+const getBanksByCountryCode = `-- name: GetBanksByCountryCode :many
+SELECT b.swift_code, b.bank_name, b.bank_address, b.country_code, b.bank_type FROM banks as b
+WHERE b.country_code = $1
 `
 
-func (q *Queries) GetBanksBySwiftCodePrefix(ctx context.Context, swiftCode string) ([]Bank, error) {
-	rows, err := q.db.QueryContext(ctx, getBanksBySwiftCodePrefix, swiftCode)
+type GetBanksByCountryCodeRow struct {
+	SwiftCode   string         `json:"swift_code"`
+	BankName    string         `json:"bank_name"`
+	BankAddress sql.NullString `json:"bank_address"`
+	CountryCode string         `json:"country_code"`
+	BankType    BankType       `json:"bank_type"`
+}
+
+func (q *Queries) GetBanksByCountryCode(ctx context.Context, countryCode string) ([]GetBanksByCountryCodeRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBanksByCountryCode, countryCode)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Bank
+	var items []GetBanksByCountryCodeRow
 	for rows.Next() {
-		var i Bank
+		var i GetBanksByCountryCodeRow
 		if err := rows.Scan(
-			&i.ID,
 			&i.SwiftCode,
 			&i.BankName,
 			&i.BankAddress,

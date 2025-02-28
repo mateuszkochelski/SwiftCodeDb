@@ -23,14 +23,15 @@ CREATE INDEX ON "banks" ("country_code");
 
 ALTER TABLE banks ADD CONSTRAINT fk_banks_country FOREIGN KEY (country_code) REFERENCES countries(country_code);
 
-
 ALTER TABLE banks ADD CONSTRAINT bank_name CHECK (LENGTH(bank_name) > 0);
+
+ALTER TABLE banks ALTER COLUMN country_code SET DATA TYPE VARCHAR(2) COLLATE "C";
 
 ALTER TABLE banks ADD CONSTRAINT country_code CHECK (LENGTH(country_code) = 2);
 
 ALTER TABLE banks ADD CONSTRAINT swift_code_11_letters CHECK (char_length(swift_code) = 11);
 
-ALTER TABLE banks ADD CONSTRAINT country_code_uppercase CHECK (UPPER(country_code) = country_code);
+ALTER TABLE banks ADD CONSTRAINT country_code_uppercase CHECK (country_code = UPPER(country_code::TEXT));
 
 ALTER TABLE countries ADD CONSTRAINT country_name_uppercase CHECK (UPPER(country_name) = country_name);
 
