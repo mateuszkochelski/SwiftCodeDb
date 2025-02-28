@@ -26,7 +26,7 @@ make test
 ```sh
 docker exec -i go-backend sh
 ```
-Application would be running on http://localhost:8080
+The application is running on localhost:8080
 
 # Instruction without makefile
 
@@ -59,6 +59,7 @@ Insert data to database
 docker exec -i go-backend sh -c "cd /app/seeder && go build -o main && ./main"
 ```
 
+The application is running on localhost:8080
 
 
 
